@@ -1,116 +1,124 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
+
 #define MAX 12
 
-typedef struct customer{
+
+typedef struct customer {
     char name[15];
     int numTickets;
     int lineNum;
     int lineTime;
-}customer;
+} customer;
 
-typedef struct node{
+typedef struct node {
     customer *c;
-    node *next;
-}node;
+    struct node *next;
+} node;
 
-typedef struct queue{
-int queue_array[MAX];    
- node *front;
- node *back;
+typedef struct queue {
+    node *front;
+    node *back;
+} queue;
 
-}queue;
-
-node *createCustomer(int lineTime,int lineNum,char *name,int numTickets){
-    node *temp=malloc(sizeof(node)); //create a node that contains information on a customer and a next pointer
-    temp->c=malloc(sizeof(customer)); //create space in node to store customer information
-    strcpy(temp->c->name,name); //copy name 
-    temp->c->numTickets=numTickets; //copy number of tickets
-    temp->c->lineNum=lineNum; //copy line number
-    temp->c->lineTime=lineTime; //copy line time
-    temp->next=NULL; //set next to NULL
-
-   return temp; //return the node
+node *createCustomer(int lineTime, int lineNum, char *name, int numTickets) {
+    node *temp = malloc(sizeof(node)); //create a node to store customer information
+    temp->c = malloc(sizeof(customer)); //create space in the node to store a customer
+    strcpy(temp->c->name, name); //store the name
+    temp->c->numTickets = numTickets; //store the number of tickets
+    temp->c->lineNum = lineNum; //store the line number
+    temp->c->lineTime = lineTime; //store the line time
+    temp->next = NULL; //set the next pointer to NULL
+    return temp; //return the node
 }
 
-void init(queue* qPtr) {
-qPtr->front=NULL; //if front is NULL
-qPtr->back=NULL; //if back is NULL
-//that means the queue is empty
-
-
+void init(queue *qPtr) {
+    //if both are NULL that means the queue is empty
+    qPtr->front = NULL;
+    qPtr->back = NULL;
 }
 
-int enqueue(queue* qPtr, node *n) { //enqueue adds to the back of the queue
-node *temp=malloc(sizeof(node)); //create a node for the item 
-if(temp){ //if malloc is sucessful
-temp->data=n; //store item into temp
-temp->next=NULL; //set temp next to NULL
-
-if(empty(qPtr)){ //if the queue is empty
-qPtr->front=temp; //the front is pointing to temp (new item)
-qPtr->back=temp; //the back is pointing to temp (new item)
-return 1; //return 1 indicating it was successful
-
-}//if the queue is not empty 
-qPtr->back->next=temp; //point the original back of the queue to the new item temp
-qPtr->back=temp; //make temp the new back
-
-return 1; //return 1 indicating it was sucessful
+int empty(queue *qPtr) {
+    return qPtr->front == NULL;
 }
 
-// No change to the queue was made because we couldn't find space for our
-// new enqueue.
-else{
-    return 0;
+node *enqueue(queue* qPtr, node *n) { //enqueue adds to the back of the queue
+
+    if(empty(qPtr)){ //if the queue is empty
+    qPtr->front=n; //the front is pointing to temp (new item)
+    qPtr->back=n; //the back is pointing to temp (new item)
+    return n; //return 1 indicating it was successful
+
+    } //if the queue is not empty 
+    qPtr->back->next=n; //point the original back of the queue to the new item temp
+    qPtr->back=n; //make temp the new back
+
+    return n; //return 1 indicating it was sucessful
 }
 
-}
-
-
-int dequeue(queue* qPtr) { //removes from the front 
-    
-    if(empty(qPtr)){ //if the queue is empty 
-        return EMPTY; //return -1
+node *dequeue(queue* qPtr) { 
+    if(empty(qPtr)){ 
+        return NULL; // Return NULL if queue is empty
     }
-    else{ //if the queue is not empty 
-        int saveVal=qPtr->front->data; //save the value of the front 
-        node *temp=qPtr->front; //create a temp variable to store the front 
-        qPtr->front=qPtr->front->next; //make front the next spot
-        free(temp); //free the temp variable 
-
-        if(empty(qPtr)){ //if after removing the front the queue is empty that means there was only 1 item in the queue to start
-            qPtr->back=NULL; //set back to NULL so front and back is NULL
+    else{ 
+        node *temp = qPtr->front; // Save the front node
+        node *returnNode = temp; // Node to return
+        
+        qPtr->front = qPtr->front->next; // Move front pointer
+        
+        // If queue becomes empty after removing the node
+        if(qPtr->front == NULL){ 
+            qPtr->back = NULL; 
         }
-        return saveVal; //return the value that was removed
-
+        
+        //remove the node from the queue
+        returnNode->next = NULL;
+        
+        return returnNode; // Return the node
     }
-    
-    
 }
 
-    int peek(queue* qPtr) {
-    if(qPtr->front !=NULL){
-        return qPtr->front->data;
+node *peek(queue* qPtr) {
+    if(qPtr->front != NULL){
+        return qPtr->front; // Return the entire front node
     }
     else{
-        return -1;
+        return NULL; // Return NULL if queue is empty
     }
 }
 
-int empty(queue* qPtr) {
-    return qPtr->front==NULL;
+
+int main() {
+    int numTestCases, numCustomers, lineTime, lineNum, numTickets;
+    char name[25];
+    queue lines[MAX];  
+    int cashierTime=0;
+    //scan the test cases
+    scanf("%d",&numTestCases);
+   //for each test case scan the number of customers
+    for (int i=0;i<numTestCases;i++){
+        scanf("%d",&numCustomers);
+        //set queues to NULL
+        for (int j=0;j<MAX;j++){
+            init(&lines[j]);
+        } //scan each customer and but them into the respective line 
+            for(int k=0;k<numCustomers;k++){
+                scanf("%d %d %s %d",&lineTime,&lineNum,name,&numTickets);
+                node *newCustomer=createCustomer(lineTime,lineNum,name,numTickets);
+                enqueue(&lines[lineNum-1],newCustomer); 
+
+
+
+            }
+
+
+    }
+
+    
+
+    return 0;
 }
-
-int main(){
-char name[21];
-int numTickets;
-int lineNum;
-int lineTime;
-node *head=NULL;
+    
 
 
-
-}
