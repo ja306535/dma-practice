@@ -157,3 +157,57 @@ int peek(queue* qPtr) {
     }
 }
 
+void processQueues(queue lines[], int numLines, int numCustomers) {
+    int currentTime = 0; // tracks the global time
+  //loop that iterates through every customer
+    for (int i = 0; i < numCustomers; i++) {
+        node *temp = NULL; //create a temp node to store customer
+        int queueNum = -1; //tracker for customer
+        int fewestTickets = 9999999; //fewest tickets
+        
+         //loop to check if customer arrived
+        for (int i = 0; i < numLines; i++) {
+            if (!empty(&lines[i])) {
+                node *front = peek(&lines[i]); //checks first customer and stores in front
+                if (front->c->arrivalTime <= currentTime) {
+                    if (front->c->numTickets < fewestTickets) {
+                        temp = front; //stores that customer into temp
+                        queueNum = i; //saves poition
+                        fewestTickets = front->c->numTickets; //save the number of tickets
+                    }
+                }
+            }
+        }
+
+        // loop to pick the one with the earliest arrival if none have showed up yet
+        if (temp == NULL) {
+            int bestTime = 9999999; //tracker for earliest time
+            for (int i = 0; i < numLines; i++) {
+                if (!empty(&lines[i])) {
+                    node *front = peek(&lines[i]);
+                    if (front->c->arrivalTime < bestTime) {
+                        temp = front; //store that customer into temp
+                        queueNum = i; //save position
+                        bestTime = front->c->arrivalTime; //saave the time
+                    }
+                }
+            }
+        }
+
+        if (temp == NULL)
+            return; // No more customers to process
+
+        // dequeue and process the current customer
+        customer *customer = dequeue(&lines[queueNum]);
+          //if the current time is less than the customers arrival time update it
+        if (currentTime < customer->arrivalTime) {
+            currentTime = customer->arrivalTime;
+        }
+        // Calculate checkout time
+        currentTime += (20 + 10 * customer->numTickets);
+        printf("%s left the counter at time %d from line %d.\n", customer->name, currentTime, customer->lineNum);
+
+        free(customer);
+        
+    }
+}
