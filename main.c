@@ -146,7 +146,7 @@ void processQueues(queue lines[], int numLines, int numCustomers) {
         }
 
         if (temp == NULL)
-            return; // No more customers to process
+            return; // no more customers to process
 
         // dequeue and process the current customer
         customer *customer = dequeue(&lines[queueNum]);
@@ -154,7 +154,7 @@ void processQueues(queue lines[], int numLines, int numCustomers) {
         if (currentTime < customer->arrivalTime) {
             currentTime = customer->arrivalTime;
         }
-        // Calculate checkout time
+        // calculate checkout time
         currentTime += (20 + 10 * customer->numTickets);
         printf("%s left the counter at time %d from line %d.\n", customer->name, currentTime, customer->lineNum);
         //free customer 
